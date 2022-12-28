@@ -26,16 +26,19 @@ public class DmakerService {
     private final EntityManager em;
 
     @Transactional
-    public void createDeveloper(CreateDeveloper.Request request) {
-        Developers developers = Developers.builder()
-                .developerLevel(DeveloperLevel.JUNIOR)
-                .developerSkillType(DeveloperSkillType.FRONT_END)
-                .experienceYears(2)
-                .name("Olaf")
-                .age(5)
-                .build();
+    public CreateDeveloper.Response createDeveloper(CreateDeveloper.Request request) {
+        validateCreatDeveloperRequest(request);
 
+        Developers developers = Developers.builder()
+                .developerLevel(request.getDeveloperLevel())
+                .developerSkillType(request.getDeveloperSkillType())
+                .experienceYears(request.getExperienceYears())
+                .memberId(request.getMemberId())
+                .name(request.getName())
+                .age(request.getAge())
+                .build();
         developerRepository.save(developers);
+        return CreateDeveloper.Response.fromEntity(developers);
     }
 
     private void validateCreatDeveloperRequest(CreateDeveloper.Request request) {
@@ -51,7 +54,7 @@ public class DmakerService {
             throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
         }
 
-        if (developerLevel == DeveloperLevel.JUNGNIOR && experienceYears > 4) {
+        if (developerLevel == DeveloperLevel.JUNIOR && experienceYears > 4) {
             throw new DMakerException(LEVEL_EXPERIENCE_YEARS_NOT_MATCHED);
         }
 
